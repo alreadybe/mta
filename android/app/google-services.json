@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "714156128986",
+    "project_id": "meme-tournament-assistant",
+    "storage_bucket": "meme-tournament-assistant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714156128986:android:c304832b72dd0a487a43e3",
+        "android_client_info": {
+          "package_name": "com.meme.mta_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "714156128986-k59r87mg5gdj4s4ci0ib3troo9h5fvli.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5GP3bRrnuYmAH9qT5jvpt9--AP_fhVMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "714156128986-k59r87mg5gdj4s4ci0ib3troo9h5fvli.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,92 @@
+name: mta_app
+description: App for tournament manage
+publish_to: none
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0
+
+environment:
+  sdk: '>=2.17.6 <3.0.0'
+  flutter: '>=3.0.5 <3.3.6'
+
+flutter_gen:
+  output: lib/const/assets
+  line_length: 100
+
+  integrations:
+    flutter_svg: true
+    flare_flutter: false
+    rive: false
+    lottie: false
+
+  assets:
+    enabled: true
+    outputs:
+      style: dot-delimiter
+      class_name: Assets
+    exclude: []
+
+  fonts:
+    enabled: true
+    outputs:
+        class_name: FontFamily
+
+
+dependencies:
+  analyzer_plugin: ^0.11.1
+  animated_text_kit: ^4.2.2
+  async: ^2.8.2
+  auto_size_text: ^3.0.0
+  bloc_concurrency: ^0.2.0
+  collection: ^1.16.0
+  cupertino_icons: ^1.0.5
+  dio: ^4.0.6
+  firebase_analytics: ^9.3.4
+  firebase_core: ^1.22.0
+  firebase_crashlytics: ^2.8.10
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.0.1
+  flutter_easyloading: ^3.0.5
+  flutter_localizations:
+    sdk: flutter  
+  flutter_spinkit: ^5.1.0
+  flutter_svg: ^1.1.1+1
+  form_validator: ^1.0.2
+  freezed_annotation: ^2.0.3
+  get_it: ^7.2.0
+  injectable: ^1.5.3
+  intl: ^0.17.0
+  logger: ^1.1.0
+  logger_flutter_v2: ^1.0.3
+  page_transition: ^2.0.9
+  pretty_dio_logger: ^1.2.0-beta-1
+  shared_preferences: ^2.0.15
+dev_dependencies:
+  build_runner: ^2.2.0
+  flutter_gen_runner:
+  flutter_launcher_icons:
+    git:
+      url: https://github.com/fluttercommunity/flutter_launcher_icons.git
+      ref: 29d95359912c4683a948a23d967702e6bbdb63b7 # TODO: use pub.dev version when it's released
+  flutter_test:
+    sdk: flutter
+  freezed: ^2.0.5
+  injectable_generator: ^1.5.4
+  json_serializable: ^6.3.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/svg/

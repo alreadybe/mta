@@ -1,0 +1,7 @@
+arb-dir: lib/const/l10n
+template-arb-file: intl_en.arb
+output-localization-file: s.dart
+output-class: S
+output-dir: lib/const/l10n
+nullable-getter: false
+synthetic-package: false
