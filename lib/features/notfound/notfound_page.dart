@@ -1,4 +1,3 @@
-import 'package:mta_app/const/l10n/s.dart';
 import 'package:flutter/material.dart';
 
 class NotFoundPage extends StatelessWidget {
@@ -16,7 +15,7 @@ class NotFoundPage extends StatelessWidget {
           },
         ),
         backgroundColor: Colors.blue[600],
-        title: Text('fff'),
+        title: const Text('fff'),
       ),
       body: const _Body(),
     );
@@ -44,22 +43,22 @@ class _Body extends StatelessWidget {
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+            children: const <Widget>[
               Text(
                 'Yй',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 17.0,
                   fontWeight: FontWeight.w800,
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 height: 5.0,
               ),
               Text(
                 'asd',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.normal,
                   color: Colors.black,

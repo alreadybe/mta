@@ -11,6 +11,11 @@ import 'package:flutter/widgets.dart';
 
 class Assets {
   Assets._();
+
+  static const AssetGenImage warhammerLogo = AssetGenImage('assets/warhammer_logo.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [warhammerLogo];
 }
 
 class AssetGenImage {

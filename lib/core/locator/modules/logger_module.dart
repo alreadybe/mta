@@ -1,7 +1,7 @@
-import 'package:mta_app/core/logger.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:logger_flutter_v2/logger_flutter_v2.dart';
+import 'package:mta_app/core/logger.dart';
 
 @module
 abstract class LoggerModule {
