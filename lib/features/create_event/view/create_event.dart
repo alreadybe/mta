@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mta_app/core/theme/colors.dart';
 import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
-import 'package:mta_app/features/create_event/bloc/create_event_event.dart';
-import 'package:mta_app/features/create_event/bloc/create_event_state.dart';
 import 'package:mta_app/models/event.dart';
 import 'package:mta_app/models/event_type.dart';
 
@@ -26,10 +25,15 @@ class _CreateEventState extends State<CreateEvent> {
   late TextEditingController _descriptionController;
 
   late EventType _eventType;
-  late DateTime _eventDate;
+  DateTime? _eventDate;
+
+  late final CreateEventBloc _createEventBloc;
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
+    super.initState();
     _eventNameController = TextEditingController();
     _tourCountController = TextEditingController();
     _eloController = TextEditingController();
@@ -37,8 +41,8 @@ class _CreateEventState extends State<CreateEvent> {
     _descriptionController = TextEditingController();
 
     _eventType = EventType.SOLO;
-    _eventDate = DateTime.now();
-    super.initState();
+
+    _createEventBloc = context.read();
   }
 
   @override
@@ -55,21 +59,23 @@ class _CreateEventState extends State<CreateEvent> {
   Widget build(BuildContext context) {
     return BlocConsumer<CreateEventBloc, CreateEventState>(
         listener: (context, state) {
-      print('getted state');
       state.mapOrNull(
-        error: (value) =>
-            showAboutDialog(context: context, children: [Text(value.message!)]),
-      );
+          created: (value) {
+            Navigator.pop(context);
+            EasyLoading.showSuccess('Event created');
+          },
+          error: (value) =>
+              EasyLoading.showError(value.message ?? 'Unknow error'));
     }, builder: (context, state) {
       return DecoratedBox(
         decoration: BoxDecoration(color: AppColors.dark),
-        child: state == const CreateEventState.loading()
+        child: state == CreateEventState.loading()
             ? const CircularProgressIndicator()
             : Scaffold(
                 floatingActionButton: FloatingActionButton(
                   onPressed: _saveEvent,
                   backgroundColor: AppColors.accentViolet,
-                  child: const Icon(Icons.create),
+                  child: const Icon(Icons.check),
                 ),
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -88,191 +94,225 @@ class _CreateEventState extends State<CreateEvent> {
                     child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width - 80,
-                              child: TextField(
-                                  controller: _eventNameController,
-                                  style: AppStyles.textStyle,
-                                  decoration: AppStyles.inputFieldStyle
-                                      .copyWith(hintText: 'Название')),
-                            ),
-                            IconButton(
-                              onPressed: () async {
-                                _eventDate = (await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now()
-                                        .subtract(const Duration(days: 30)),
-                                    lastDate: DateTime.now()
-                                        .add(const Duration(days: 90))))!;
-                              },
-                              icon: const Icon(Icons.calendar_month),
-                              iconSize: 32,
-                              color: Colors.white,
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: AppStyles.backgroundBox,
-                          child: Column(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Align(
-                                child: Text(
-                                  'Тип',
-                                  style: GoogleFonts.montserrat(
-                                      color: Colors.white),
-                                ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width - 80,
+                                child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Заполните поля';
+                                      }
+                                      return null;
+                                    },
+                                    controller: _eventNameController,
+                                    style: AppStyles.textStyle,
+                                    decoration: AppStyles.inputFieldStyle
+                                        .copyWith(labelText: 'Название')),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 3 -
-                                            31,
-                                    child: RadioListTile<EventType>(
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                      activeColor: AppColors.accentViolet,
-                                      title: Text(
-                                        'Соло',
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.white),
-                                      ),
-                                      value: EventType.SOLO,
-                                      groupValue: _eventType,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _eventType = value!;
-                                        });
-                                      },
-                                    ),
+                              IconButton(
+                                onPressed: () async {
+                                  final newDate = await showDatePicker(
+                                      builder: (context, child) => Theme(
+                                            data: Theme.of(context).copyWith(
+                                                colorScheme: ColorScheme.light(
+                                                    primary: AppColors
+                                                        .accentViolet)),
+                                            child: child!,
+                                          ),
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now()
+                                          .subtract(const Duration(days: 30)),
+                                      lastDate: DateTime.now()
+                                          .add(const Duration(days: 90)));
+                                  setState(() {
+                                    _eventDate = newDate;
+                                  });
+                                },
+                                icon: const Icon(Icons.calendar_month),
+                                iconSize: 32,
+                                color: _eventDate == null
+                                    ? Colors.red
+                                    : Colors.green,
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: AppStyles.backgroundBox,
+                            child: Column(
+                              children: [
+                                Align(
+                                  child: Text(
+                                    'Тип',
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.white),
                                   ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 3 -
-                                            38,
-                                    child: RadioListTile<EventType>(
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                      activeColor: AppColors.accentViolet,
-                                      title: Text(
-                                        'Фан',
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.white),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width /
+                                              3 -
+                                          31,
+                                      child: RadioListTile<EventType>(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                        activeColor: AppColors.accentViolet,
+                                        title: Text(
+                                          'Соло',
+                                          style: GoogleFonts.montserrat(
+                                              color: Colors.white),
+                                        ),
+                                        value: EventType.SOLO,
+                                        groupValue: _eventType,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _eventType = value!;
+                                          });
+                                        },
                                       ),
-                                      value: EventType.FUN,
-                                      groupValue: _eventType,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _eventType = value!;
-                                        });
-                                      },
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 3 +
-                                            10,
-                                    child: RadioListTile<EventType>(
-                                      activeColor: AppColors.accentViolet,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                      title: Text(
-                                        'Команды',
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.white),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width /
+                                              3 -
+                                          38,
+                                      child: RadioListTile<EventType>(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                        activeColor: AppColors.accentViolet,
+                                        title: Text(
+                                          'Фан',
+                                          style: GoogleFonts.montserrat(
+                                              color: Colors.white),
+                                        ),
+                                        value: EventType.FUN,
+                                        groupValue: _eventType,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _eventType = value!;
+                                          });
+                                        },
                                       ),
-                                      value: EventType.TEAM,
-                                      groupValue: _eventType,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _eventType = value!;
-                                        });
-                                      },
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width /
+                                              3 +
+                                          10,
+                                      child: RadioListTile<EventType>(
+                                        activeColor: AppColors.accentViolet,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                        title: Text(
+                                          'Команды',
+                                          style: GoogleFonts.montserrat(
+                                              color: Colors.white),
+                                        ),
+                                        value: EventType.TEAM,
+                                        groupValue: _eventType,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _eventType = value!;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width / 3,
+                                child: TextFormField(
+                                    controller: _eloController,
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.white, fontSize: 22),
+                                    decoration:
+                                        AppStyles.inputFieldStyle.copyWith(
+                                      labelText: 'Elo рестрикт',
+                                    )),
+                              ),
+                              SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width / 4 - 30,
+                                child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '';
+                                      }
+                                      return null;
+                                    },
+                                    controller: _tourCountController,
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.white, fontSize: 22),
+                                    decoration:
+                                        AppStyles.inputFieldStyle.copyWith(
+                                      labelText: 'Туров',
+                                    )),
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width / 3,
+                                child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '';
+                                      }
+                                      return null;
+                                    },
+                                    controller: _ptsController,
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.white, fontSize: 22),
+                                    decoration:
+                                        AppStyles.inputFieldStyle.copyWith(
+                                      labelText: 'pts формат',
+                                    )),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width / 3,
-                              child: TextField(
-                                  controller: _eloController,
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.montserrat(
-                                      color: Colors.white, fontSize: 22),
-                                  decoration:
-                                      AppStyles.inputFieldStyle.copyWith(
-                                    hintText: 'Elo рестрикт',
-                                  )),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width / 4 - 30,
-                              child: TextField(
-                                  controller: _tourCountController,
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.montserrat(
-                                      color: Colors.white, fontSize: 22),
-                                  decoration:
-                                      AppStyles.inputFieldStyle.copyWith(
-                                    hintText: 'Туров',
-                                  )),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width / 3,
-                              child: TextField(
-                                  controller: _ptsController,
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.montserrat(
-                                      color: Colors.white, fontSize: 22),
-                                  decoration:
-                                      AppStyles.inputFieldStyle.copyWith(
-                                    hintText: 'pts формат',
-                                  )),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        DecoratedBox(
-                          decoration: AppStyles.backgroundBox,
-                          child: TextField(
-                              controller: _descriptionController,
-                              maxLines: 20,
-                              style:
-                                  GoogleFonts.montserrat(color: Colors.white),
-                              decoration: AppStyles.inputFieldStyle.copyWith(
-                                hintText: 'Описание',
-                              )),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          DecoratedBox(
+                            decoration: AppStyles.backgroundBox,
+                            child: TextFormField(
+                                controller: _descriptionController,
+                                maxLines: 20,
+                                style:
+                                    GoogleFonts.montserrat(color: Colors.white),
+                                decoration: AppStyles.inputFieldStyle.copyWith(
+                                  labelText: 'Описание',
+                                )),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 )),
@@ -282,24 +322,19 @@ class _CreateEventState extends State<CreateEvent> {
   }
 
   Future<void> _saveEvent() async {
-    if (_eventNameController.text.isEmpty ||
-        _tourCountController.text.isEmpty ||
-        _ptsController.text.isEmpty) {
-      CreateEventBloc()
-          .add(const CreateEventEvent.error(message: 'Заполните все данные'));
-      return;
+    if (_formKey.currentState!.validate() && _eventDate != null) {
+      final event = Event(
+        id: UniqueKey().toString(),
+        date: _eventDate!,
+        name: _eventNameController.value.text,
+        type: _eventType,
+        tours: int.parse(_tourCountController.value.text),
+        pts: int.parse(_ptsController.value.text),
+        elo: _eloController.value.text.isNotEmpty
+            ? int.parse(_eloController.value.text)
+            : null,
+      );
+      _createEventBloc.add(CreateEventEvent.createEvent(event: event));
     }
-    final event = Event(
-      id: UniqueKey().toString(),
-      date: _eventDate,
-      name: _eventNameController.text,
-      type: _eventType,
-      tours: int.parse(_tourCountController.text),
-      pts: int.parse(_ptsController.text),
-      elo: _eloController.text.isNotEmpty
-          ? int.parse(_eloController.text)
-          : null,
-    );
-    CreateEventBloc().add(CreateEventEvent.createEvent(event: event));
   }
 }

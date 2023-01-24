@@ -1,30 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mta_app/features/create_event/bloc/create_event_event.dart';
-import 'package:mta_app/features/create_event/bloc/create_event_state.dart';
 import 'package:mta_app/models/event.dart';
+
+part 'create_event_bloc.freezed.dart';
+part 'create_event_event.dart';
+part 'create_event_state.dart';
 
 @injectable
 class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
-  CreateEventBloc() : super(const CreateEventState.initial()) {
+  CreateEventBloc() : super(CreateEventState.initial()) {
     on<CreateEventEvent>((event, emit) async {
-      await event.when(
-        initial: () => _init(emit),
-        createEvent: (event) => _createEvent(emit, event),
-        error: (message) => _onError(emit, message),
-      );
+      await event.when(createEvent: (event) async {
+        await _createEvent(emit, event);
+      }, error: (message) async {
+        await _onError(emit, message);
+      });
     });
   }
 
-  Future<void> _init(Emitter<CreateEventState> emit) async {}
-
   Future<void> _createEvent(Emitter<CreateEventState> emit, Event event) async {
-    emit(const CreateEventState.loading());
-    final CollectionReference eventCollection = FirebaseFirestore.instance.collection('events');
+    emit(CreateEventState.loading());
+    final CollectionReference eventCollection =
+        FirebaseFirestore.instance.collection('events');
     await eventCollection
         .add(event.toJson())
-        .then((value) => emit(const CreateEventState.created()))
+        .then((value) => emit(CreateEventState.created()))
         .catchError((error) => emit(CreateEventState.error(error.toString())));
   }
 

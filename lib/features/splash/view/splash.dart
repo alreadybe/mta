@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mta_app/const/assets/assets.gen.dart';
 import 'package:mta_app/core/locator/modules/storage.dart';
 import 'package:mta_app/features/auth/view/login.dart';
-import 'package:mta_app/features/main/main_page.dart';
+import 'package:mta_app/features/main/view/main_page.dart';
 
 class SplashPage extends StatefulWidget {
   static const routeName = 'splash';
@@ -29,7 +29,8 @@ class _SplashPageState extends State<SplashPage> {
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future<void>.delayed(_transitionDuration).then((value) => _nextScreen(isLoggedIn));
+      Future<void>.delayed(_transitionDuration)
+          .then((value) => _nextScreen(isLoggedIn));
     });
   }
 

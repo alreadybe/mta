@@ -1,15 +1,11 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mta_app/models/event.dart';
-
-part 'create_event_event.freezed.dart';
+part of 'create_event_bloc.dart';
 
 @freezed
 class CreateEventEvent with _$CreateEventEvent {
-  const factory CreateEventEvent.createEvent({
+  factory CreateEventEvent.createEvent({
     required Event event,
   }) = _CreateEvent;
-
-  const factory CreateEventEvent.error({
+  factory CreateEventEvent.error({
     required String message,
   }) = _CreateEventError;
 }
