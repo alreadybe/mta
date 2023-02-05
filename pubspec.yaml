@@ -15,7 +15,7 @@ publish_to: none
 version: 1.0.0
 
 environment:
-  sdk: '>=2.17.6 <3.0.0'
+  sdk: '>=2.18.0 <4.0.0'
   flutter: '>=3.0.5 <3.3.6'
 
 flutter_gen:
@@ -66,6 +66,7 @@ dependencies:
   logger: ^1.1.0
   logger_flutter_v2: ^1.0.3
   shared_preferences: ^2.0.15
+  flutter_svg: ^1.1.1+1
 
 dev_dependencies:
   build_runner: ^2.2.0

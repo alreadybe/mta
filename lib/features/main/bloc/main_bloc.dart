@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mta_app/models/event.dart';
+import 'package:mta_app/models/event_model.dart';
 
 part 'main_bloc.freezed.dart';
 part 'main_event.dart';
@@ -27,7 +27,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         FirebaseFirestore.instance.collection('events');
     final snapshot = await eventCollection.get();
     final data = snapshot.docs
-        .map((event) => Event.fromJson(event.data() as Map<String, dynamic>))
+        .map((event) =>
+            EventModel.fromJson(event.data() as Map<String, dynamic>))
         .toList();
     emit(MainState.loaded(data));
   }

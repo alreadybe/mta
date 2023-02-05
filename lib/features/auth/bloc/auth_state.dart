@@ -1,11 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mta_app/models/user.dart';
+import 'package:mta_app/models/user_model.dart';
 
 part 'auth_state.freezed.dart';
 
 @freezed
 class AuthState with _$AuthState {
-  bool get isAuthenticated => maybeMap(authenticated: (_) => true, orElse: () => false);
+  bool get isAuthenticated =>
+      maybeMap(authenticated: (_) => true, orElse: () => false);
 
   bool get isLoading => maybeMap(loading: (_) => true, orElse: () => false);
 
@@ -13,7 +14,8 @@ class AuthState with _$AuthState {
 
   const factory AuthState.initial() = _AuthInitial;
 
-  const factory AuthState.authenticated({required User user}) = _AuthAuthenticated;
+  const factory AuthState.authenticated({required UserModel user}) =
+      _AuthAuthenticated;
 
   const factory AuthState.unauthenticated() = _AuthUnauthenticated;
 

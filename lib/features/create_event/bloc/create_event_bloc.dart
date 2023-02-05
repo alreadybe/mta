@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mta_app/models/event.dart';
+import 'package:mta_app/models/event_model.dart';
 
 part 'create_event_bloc.freezed.dart';
 part 'create_event_event.dart';
@@ -20,7 +20,8 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
     });
   }
 
-  Future<void> _createEvent(Emitter<CreateEventState> emit, Event event) async {
+  Future<void> _createEvent(
+      Emitter<CreateEventState> emit, EventModel event) async {
     emit(CreateEventState.loading());
     final CollectionReference eventCollection =
         FirebaseFirestore.instance.collection('events');

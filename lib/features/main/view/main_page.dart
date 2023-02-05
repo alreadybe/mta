@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
+import 'package:mta_app/features/auth/bloc/auth_state.dart';
 import 'package:mta_app/features/create_event/view/create_event.dart';
-import 'package:mta_app/features/edit_event/view/edit_event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
+import 'package:mta_app/features/main/widgets/event_item.dart';
+import 'package:mta_app/models/user_type_model.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = 'main';
@@ -31,43 +34,43 @@ class _MainPageState extends State<MainPage> {
                 context: context,
                 children: [Text(value.message ?? 'Unknow error')]));
       },
-      builder: (context, state) {
-        state.mapOrNull(
+      builder: (context, mainState) {
+        mainState.mapOrNull(
           initial: (value) => _mainBloc.add(MainEvent.getData(filter: {})),
         );
-        return SafeArea(
-          child: Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: const Text('Pairing app'),
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      child: const Text('Create event'),
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            return SafeArea(
+              child: Scaffold(
+                floatingActionButton:
+                    authState.mapOrNull(authenticated: (value) {
+                  if (value.user.userType.contains(UserType.ORG) ||
+                      value.user.userType.contains(UserType.ADMIN)) {
+                    return FloatingActionButton(
+                      child: const Icon(Icons.add),
                       onPressed: () =>
-                          Navigator.pushNamed(context, CreateEvent.routeName)),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                      child: const Text('Edit event'),
-                      onPressed: () =>
-                          _mainBloc.add(MainEvent.getData(filter: {}))),
-                  SizedBox(
-                      height: 200,
-                      child: state.mapOrNull(
-                            loaded: (value) => ListView.builder(
-                              itemCount: value.events.length,
-                              itemBuilder: (context, index) =>
-                                  Text(value.events[index].name),
-                            ),
-                          ) ??
-                          const CircularProgressIndicator())
-                ],
+                          Navigator.pushNamed(context, CreateEvent.routeName),
+                    );
+                  }
+                  return null;
+                }),
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: const Text('Pairing app'),
+                ),
+                body: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: mainState.mapOrNull(
+                          loaded: (value) => ListView.builder(
+                            itemCount: value.events.length,
+                            itemBuilder: (context, index) =>
+                                EventItem(event: value.events[index]),
+                          ),
+                        ) ??
+                        const Center(child: CircularProgressIndicator())),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

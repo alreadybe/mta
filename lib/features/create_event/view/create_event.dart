@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mta_app/core/theme/colors.dart';
 import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
-import 'package:mta_app/models/event.dart';
+import 'package:mta_app/models/event_model.dart';
 import 'package:mta_app/models/event_type.dart';
 
 class CreateEvent extends StatefulWidget {
@@ -68,9 +68,12 @@ class _CreateEventState extends State<CreateEvent> {
               EasyLoading.showError(value.message ?? 'Unknow error'));
     }, builder: (context, state) {
       return DecoratedBox(
-        decoration: BoxDecoration(color: AppColors.dark),
+        decoration: BoxDecoration(color: Colors.grey[900]),
         child: state == CreateEventState.loading()
-            ? const CircularProgressIndicator()
+            ? CircularProgressIndicator(
+                color: Colors.red[400],
+                backgroundColor: Colors.grey[900],
+              )
             : Scaffold(
                 floatingActionButton: FloatingActionButton(
                   onPressed: _saveEvent,
@@ -323,7 +326,7 @@ class _CreateEventState extends State<CreateEvent> {
 
   Future<void> _saveEvent() async {
     if (_formKey.currentState!.validate() && _eventDate != null) {
-      final event = Event(
+      final event = EventModel(
         id: UniqueKey().toString(),
         date: _eventDate!,
         name: _eventNameController.value.text,

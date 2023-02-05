@@ -8,12 +8,8 @@ class AppStyles {
       borderRadius: const BorderRadius.all(Radius.circular(12)));
   static TextStyle textStyle = GoogleFonts.montserrat(color: AppColors.white);
   static InputDecoration inputFieldStyle = InputDecoration(
-      focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.white),
-          borderRadius: const BorderRadius.all(Radius.circular(12))),
-      enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.accentViolet),
-          borderRadius: const BorderRadius.all(Radius.circular(12))),
+      fillColor: Colors.green[600],
+      focusColor: Colors.grey[600],
       labelStyle: GoogleFonts.montserrat(color: Colors.white38, fontSize: 16),
       errorStyle:
           GoogleFonts.montserrat(color: Colors.redAccent, fontSize: 12));

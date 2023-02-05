@@ -1,13 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mta_app/models/event_type.dart';
 
-part 'event.freezed.dart';
+part 'event_model.freezed.dart';
 
-part 'event.g.dart';
+part 'event_model.g.dart';
 
 @freezed
-class Event with _$Event {
-  const factory Event({
+class EventModel with _$EventModel {
+  const factory EventModel({
     required String id,
     required DateTime date,
     required String name,
@@ -16,7 +16,8 @@ class Event with _$Event {
     required int tours,
     required int pts,
     int? elo,
-  }) = _Event;
+  }) = _EventModel;
 
-  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+  factory EventModel.fromJson(Map<String, dynamic> json) =>
+      _$EventModelFromJson(json);
 }
