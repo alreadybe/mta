@@ -10,8 +10,7 @@ class EventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, Event.routeName,
-          arguments: EventArguments(eventId: event.id)),
+      onTap: () => Navigator.pushNamed(context, Event.routeName),
       child: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Container(

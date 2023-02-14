@@ -43,14 +43,14 @@ flutter_gen:
 
 dependencies:
   animated_text_kit: ^4.2.2
-  bloc_concurrency: ^0.2.0
+  bloc_concurrency: 
   cloud_firestore:
   firebase_analytics: ^10.0.3
   firebase_auth: ^4.1.0
   firebase_core: ^2.1.1
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.1
+  flutter_bloc: 
   flutter_localizations:
     sdk: flutter  
   flutter_spinkit: ^5.1.0

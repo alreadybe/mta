@@ -37,7 +37,9 @@ class _AppState extends State<App> {
         providers: [
           BlocProvider<CreateEventBloc>(create: (context) => locator.get()),
           BlocProvider<MainBloc>(create: (context) => locator.get()),
-          BlocProvider<EventBloc>(create: (context) => locator.get()),
+          BlocProvider<EventBloc>(
+              create: (context) =>
+                  locator.get()..add(EventEvent.selectTour(tour: 1))),
           BlocProvider<AuthBloc>(
               create: (context) =>
                   locator.get()..add(const AuthEvent.initial()))
