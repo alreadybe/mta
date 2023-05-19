@@ -4,14 +4,17 @@ part of 'event_bloc.dart';
 class EventState with _$EventState {
   factory EventState.initial() = _EventStateInitial;
   factory EventState.firstTour(
-          List<List<PlayerModel>>? pairings, List<PlayerModel>? players) =
-      _EventStateFirstTour;
+      List<List<PlayerModel>>? pairings,
+      List<PairingModel>? currentPairings,
+      List<PlayerModel>? players) = _EventStateFirstTour;
   factory EventState.secondTour(
-          List<List<PlayerModel>> pairings, List<PlayerModel> players) =
-      _EventStateSecondTour;
+      List<List<PlayerModel>> pairings,
+      List<PairingModel>? currentPairings,
+      List<PlayerModel> players) = _EventStateSecondTour;
   factory EventState.thirdTour(
-          List<List<PlayerModel>> pairings, List<PlayerModel> players) =
-      _EventStateThirdTour;
+      List<List<PlayerModel>> pairings,
+      List<PairingModel>? currentPairings,
+      List<PlayerModel> players) = _EventStateThirdTour;
   factory EventState.finalResult(List<PlayerModel> players) =
       _EventStateFinalResult;
   factory EventState.loading() = _EventStateLoading;

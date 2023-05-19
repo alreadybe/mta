@@ -50,30 +50,39 @@ class _EventState extends State<Event> {
                   if (value.pairings != null)
                     ...value.pairings!.map((e) {
                       final key = GlobalKey<PairingRowState>();
-                      final widget = PairingRow(key: key, pairing: e);
+                      final currentPairing = value.currentPairings != null
+                          ? value.currentPairings![value.pairings!.indexOf(e)]
+                          : null;
+                      final widget = PairingRow(
+                          key: key, pairing: e, currentPairing: currentPairing);
                       pairingRows.addEntries({key: widget}.entries);
                       return widget;
                     }).toList()
-                  else
+                  else ...[
                     ...pairingRows.keys
                         .map((key) => PairingRow(key: key))
                         .toList(),
-                  ElevatedButton(
-                      onPressed: () {
-                        final key = GlobalKey<PairingRowState>();
-                        setState(() {
-                          pairingRows
-                              .addEntries({key: PairingRow(key: key)}.entries);
-                        });
-                      },
-                      child: const Text('add')),
+                    ElevatedButton(
+                        onPressed: () {
+                          final key = GlobalKey<PairingRowState>();
+                          setState(() {
+                            pairingRows.addEntries(
+                                {key: PairingRow(key: key)}.entries);
+                          });
+                        },
+                        child: const Text('add')),
+                  ]
                 ],
               ),
               secondTour: (value) => Column(
                 children: [
                   ...value.pairings.map((e) {
                     final key = GlobalKey<PairingRowState>();
-                    final widget = PairingRow(key: key, pairing: e);
+                    final currentPairing = value.currentPairings != null
+                        ? value.currentPairings![value.pairings.indexOf(e)]
+                        : null;
+                    final widget = PairingRow(
+                        key: key, pairing: e, currentPairing: currentPairing);
                     pairingRows.addEntries({key: widget}.entries);
                     return widget;
                   }).toList()
@@ -83,7 +92,11 @@ class _EventState extends State<Event> {
                 children: [
                   ...value.pairings.map((e) {
                     final key = GlobalKey<PairingRowState>();
-                    final widget = PairingRow(key: key, pairing: e);
+                    final currentPairing = value.currentPairings != null
+                        ? value.currentPairings![value.pairings.indexOf(e)]
+                        : null;
+                    final widget = PairingRow(
+                        key: key, pairing: e, currentPairing: currentPairing);
                     pairingRows.addEntries({key: widget}.entries);
                     return widget;
                   }).toList()

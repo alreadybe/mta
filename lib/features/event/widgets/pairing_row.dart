@@ -2,11 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:mta_app/core/theme/styles.dart';
+import 'package:mta_app/models/pairing_model.dart';
 import 'package:mta_app/models/player_model.dart';
 
 class PairingRow extends StatefulWidget {
   List<PlayerModel>? pairing;
-  PairingRow({this.pairing, super.key});
+  PairingModel? currentPairing;
+  PairingRow({this.pairing, this.currentPairing, super.key});
 
   @override
   State<PairingRow> createState() => PairingRowState();
@@ -53,7 +55,7 @@ class PairingRowState extends State<PairingRow> {
                           label: const Text('First player'),
                           labelStyle: AppStyles.textStyle
                               .copyWith(color: Colors.grey[400]))),
-                  if (widget.pairing == null)
+                  if (widget.currentPairing == null)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -80,19 +82,11 @@ class PairingRowState extends State<PairingRow> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'TO: ${widget.pairing!.first.to}',
+                            'TO: ${widget.currentPairing!.toRes.first}',
                             style: AppStyles.textStyle,
                           ),
                           Text(
-                            'VP: ${widget.pairing!.first.vp}',
-                            style: AppStyles.textStyle,
-                          ),
-                          Text(
-                            'Primary: ${widget.pairing!.first.primary}',
-                            style: AppStyles.textStyle,
-                          ),
-                          Text(
-                            'TO opponents: ${widget.pairing!.first.toOpponents}',
+                            'VP: ${widget.currentPairing!.vpRes.first}',
                             style: AppStyles.textStyle,
                           ),
                         ],
@@ -108,7 +102,7 @@ class PairingRowState extends State<PairingRow> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextField(
-                    enabled: widget.pairing == null,
+                    enabled: widget.currentPairing == null,
                     style: AppStyles.textStyle.copyWith(color: Colors.white),
                     controller: secondPlayerController,
                     decoration: InputDecoration(
@@ -116,7 +110,7 @@ class PairingRowState extends State<PairingRow> {
                         labelStyle: AppStyles.textStyle
                             .copyWith(color: Colors.grey[400])),
                   ),
-                  if (widget.pairing == null)
+                  if (widget.currentPairing == null)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -143,19 +137,11 @@ class PairingRowState extends State<PairingRow> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'TO: ${widget.pairing!.last.to}',
+                            'TO: ${widget.currentPairing!.toRes.last}',
                             style: AppStyles.textStyle,
                           ),
                           Text(
-                            'VP: ${widget.pairing!.last.vp}',
-                            style: AppStyles.textStyle,
-                          ),
-                          Text(
-                            'Primary: ${widget.pairing!.last.primary}',
-                            style: AppStyles.textStyle,
-                          ),
-                          Text(
-                            'TO opponents: ${widget.pairing!.last.toOpponents}',
+                            'VP: ${widget.currentPairing!.vpRes.last}',
                             style: AppStyles.textStyle,
                           ),
                         ],
