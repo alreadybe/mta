@@ -7,6 +7,7 @@ import 'package:mta_app/core/locator/locator.dart';
 import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_event.dart';
 import 'package:mta_app/features/auth/view/login.dart';
+import 'package:mta_app/features/auth/view/signin.dart';
 import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
 import 'package:mta_app/features/create_event/view/create_event.dart';
 import 'package:mta_app/features/event/bloc/event_bloc.dart';
@@ -52,6 +53,7 @@ class _AppState extends State<App> {
           routes: <String, WidgetBuilder>{
             MainPage.routeName: (context) => const MainPage(),
             LoginPage.routeName: (context) => const LoginPage(),
+            SignInPage.routeName: (context) => const SignInPage(),
             CreateEvent.routeName: (context) => const CreateEvent(),
             Event.routeName: (context) => const Event()
           },

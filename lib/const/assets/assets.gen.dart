@@ -14,14 +14,8 @@ import 'package:flutter/services.dart';
 class $AssetsSvgGen {
   const $AssetsSvgGen();
 
-  /// File path: assets/svg/MdrIApueNc8.jpg
-  AssetGenImage get mdrIApueNc8 => const AssetGenImage('assets/svg/MdrIApueNc8.jpg');
-
   /// File path: assets/svg/final_icon.svg
   SvgGenImage get finalIcon => const SvgGenImage('assets/svg/final_icon.svg');
-
-  /// File path: assets/svg/icon.png
-  AssetGenImage get icon => const AssetGenImage('assets/svg/icon.png');
 
   /// File path: assets/svg/one_icon.svg
   SvgGenImage get oneIcon => const SvgGenImage('assets/svg/one_icon.svg');
@@ -32,12 +26,8 @@ class $AssetsSvgGen {
   /// File path: assets/svg/two_icon.svg
   SvgGenImage get twoIcon => const SvgGenImage('assets/svg/two_icon.svg');
 
-  /// File path: assets/svg/xkZLmQICVws.jpg
-  AssetGenImage get xkZLmQICVws => const AssetGenImage('assets/svg/xkZLmQICVws.jpg');
-
   /// List of all assets
-  List<dynamic> get values =>
-      [mdrIApueNc8, finalIcon, icon, oneIcon, threeIcon, twoIcon, xkZLmQICVws];
+  List<SvgGenImage> get values => [finalIcon, oneIcon, threeIcon, twoIcon];
 }
 
 class Assets {
@@ -45,10 +35,9 @@ class Assets {
 
   static const AssetGenImage splashImage = AssetGenImage('assets/splash_image.png');
   static const $AssetsSvgGen svg = $AssetsSvgGen();
-  static const AssetGenImage warhammerLogo = AssetGenImage('assets/warhammer_logo.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [splashImage, warhammerLogo];
+  List<AssetGenImage> get values => [splashImage];
 }
 
 class AssetGenImage {

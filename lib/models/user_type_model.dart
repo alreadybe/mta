@@ -1,1 +1,1 @@
-enum UserType { ADMIN, ORG, PLAYER }
+enum UserType { ADMIN, ORG, PLAYER, WAITING_APPROVE }

@@ -16,4 +16,9 @@ class Storage {
     final jsonUser = json.decode(rawUser);
     return UserModel.fromJson(Map.castFrom(jsonUser as Map));
   }
+
+  Future<void> clear() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.clear();
+  }
 }

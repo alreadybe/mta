@@ -16,5 +16,5 @@ Future<void> main() async {
     statusBarColor: Colors.grey[900],
   ));
   await locator.allReady();
-  runZoned(() => runApp(const App()));
+  runApp(const App());
 }

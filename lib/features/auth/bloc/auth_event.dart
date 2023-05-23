@@ -16,8 +16,8 @@ class AuthEvent with _$AuthEvent {
     required String firstname,
     String? nickname,
     required String lasname,
-    required double elo,
     required String password,
+    required String repeatPassword,
   }) = _AuthRegister;
 
   const factory AuthEvent.logout() = _AuthEvent;

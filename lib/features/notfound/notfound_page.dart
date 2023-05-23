@@ -29,21 +29,21 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const Icon(
+          Icon(
             Icons.ac_unit,
             size: 100.0,
             color: Colors.blue,
           ),
-          const SizedBox(
+          SizedBox(
             height: 20.0,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
+            children: <Widget>[
               Text(
                 'Yй',
                 style: TextStyle(

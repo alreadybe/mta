@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
+import 'package:mta_app/features/auth/bloc/auth_event.dart';
 import 'package:mta_app/features/auth/bloc/auth_state.dart';
+import 'package:mta_app/features/auth/view/login.dart';
 import 'package:mta_app/features/create_event/view/create_event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/main/widgets/event_item.dart';
@@ -18,11 +20,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late final MainBloc _mainBloc;
+  late final AuthBloc _authBloc;
 
   @override
   void initState() {
     super.initState();
     _mainBloc = context.read();
+    _authBloc = context.read();
   }
 
   @override
@@ -56,6 +60,15 @@ class _MainPageState extends State<MainPage> {
                 }),
                 appBar: AppBar(
                   centerTitle: true,
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, LoginPage.routeName, (route) => false);
+                          _authBloc.add(const AuthEvent.logout());
+                        },
+                        icon: const Icon(Icons.logout))
+                  ],
                   title: const Text('Pairing app'),
                 ),
                 body: Padding(
