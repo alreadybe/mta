@@ -4,10 +4,5 @@ import 'package:mta_app/core/locator/locator.config.dart';
 
 GetIt locator = GetIt.instance;
 
-@InjectableInit(
-  preferRelativeImports: false,
-)
-Future<void> configureDependencies({required String platform}) => $initGetIt(
-      locator,
-      environment: platform,
-    );
+@InjectableInit()
+Future<void> configureDependencies() async => locator.init();
