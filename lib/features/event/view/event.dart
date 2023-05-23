@@ -134,28 +134,36 @@ class _EventState extends State<Event> {
                         BottomNavigationBarItem(
                           icon: SvgPicture.asset(
                             Assets.svg.oneIcon.path,
-                            color: index == 0 ? Colors.white : Colors.grey[600],
+                            colorFilter: ColorFilter.mode(
+                                index == 0 ? Colors.white : Colors.grey[600]!,
+                                BlendMode.color),
                           ),
                           label: 'First',
                         ),
                         BottomNavigationBarItem(
                           icon: SvgPicture.asset(
                             Assets.svg.twoIcon.path,
-                            color: index == 1 ? Colors.white : Colors.grey[600],
+                            colorFilter: ColorFilter.mode(
+                                index == 1 ? Colors.white : Colors.grey[600]!,
+                                BlendMode.color),
                           ),
                           label: 'Second',
                         ),
                         BottomNavigationBarItem(
                           icon: SvgPicture.asset(
                             Assets.svg.threeIcon.path,
-                            color: index == 2 ? Colors.white : Colors.grey[600],
+                            colorFilter: ColorFilter.mode(
+                                index == 2 ? Colors.white : Colors.grey[600]!,
+                                BlendMode.color),
                           ),
                           label: 'Third',
                         ),
                         BottomNavigationBarItem(
                           icon: SvgPicture.asset(
                             Assets.svg.finalIcon.path,
-                            color: index == 3 ? Colors.white : Colors.grey[600],
+                            colorFilter: ColorFilter.mode(
+                                index == 3 ? Colors.white : Colors.grey[600]!,
+                                BlendMode.color),
                           ),
                           label: 'Result',
                         ),
