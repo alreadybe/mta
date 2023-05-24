@@ -11,6 +11,7 @@ import 'package:mta_app/features/auth/view/signin.dart';
 import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
 import 'package:mta_app/features/create_event/view/create_event.dart';
 import 'package:mta_app/features/event/bloc/event_bloc.dart';
+import 'package:mta_app/features/event/view/edit_event.dart';
 import 'package:mta_app/features/event/view/event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/main/view/main_page.dart';
@@ -55,7 +56,8 @@ class _AppState extends State<App> {
             LoginPage.routeName: (context) => const LoginPage(),
             SignInPage.routeName: (context) => const SignInPage(),
             CreateEvent.routeName: (context) => const CreateEvent(),
-            Event.routeName: (context) => const Event()
+            EventPage.routeName: (context) => const EventPage(),
+            EditEventPage.routeName: (context) => const EditEventPage(),
           },
           onUnknownRoute: (rs) =>
               MaterialPageRoute(builder: (context) => const NotFoundPage()),

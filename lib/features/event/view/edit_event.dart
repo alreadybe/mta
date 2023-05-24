@@ -5,16 +5,16 @@ import 'package:mta_app/const/assets/assets.gen.dart';
 import 'package:mta_app/features/event/bloc/event_bloc.dart';
 import 'package:mta_app/features/event/widgets/pairing_row.dart';
 
-class EventPage extends StatefulWidget {
-  const EventPage({super.key});
+class EditEventPage extends StatefulWidget {
+  const EditEventPage({super.key});
 
-  static const routeName = 'event';
+  static const routeName = 'edit_event';
 
   @override
-  State<EventPage> createState() => _EventPageState();
+  State<EditEventPage> createState() => _EditEventPageState();
 }
 
-class _EventPageState extends State<EventPage> {
+class _EditEventPageState extends State<EditEventPage> {
   late EventBloc _eventBloc;
   late String eventId;
   late Map<GlobalKey, Widget> pairingRows;

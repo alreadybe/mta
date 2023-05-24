@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:mta_app/core/theme/colors.dart';
 import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_event.dart';
@@ -29,20 +30,21 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-      state.mapOrNull(
+      state.maybeMap(
         error: (value) {
           EasyLoading.showError(value.message ?? 'Something went wrong');
           _authBloc.add(const AuthEvent.logout());
         },
-        authenticated: (value) =>
-            Navigator.pushReplacementNamed(context, MainPage.routeName),
+        orElse: EasyLoading.dismiss,
+        authenticated: (value) => Navigator.pushNamedAndRemoveUntil(
+            context, MainPage.routeName, (route) => false),
       );
     }, builder: (context, state) {
       return SafeArea(
         child: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
-            backgroundColor: Colors.grey[900],
+            backgroundColor: AppColors.dark,
             body: SingleChildScrollView(
                 child: Padding(
               padding: EdgeInsets.only(

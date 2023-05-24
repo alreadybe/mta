@@ -1,1 +1,1 @@
-enum EventType { SOLO, TEAM, FUN }
+enum EventType { SOLO, TEAM }

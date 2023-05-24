@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mta_app/const/assets/assets.gen.dart';
+import 'package:mta_app/core/theme/colors.dart';
 import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_state.dart';
@@ -38,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
         child: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
-            backgroundColor: Colors.grey[900],
+            backgroundColor: AppColors.dark,
             body: SingleChildScrollView(
                 child: Padding(
               padding: EdgeInsets.only(
@@ -68,8 +69,8 @@ class _LoginPageState extends State<LoginPage> {
                                 width:
                                     MediaQuery.of(context).size.width / 2 - 20,
                                 child: LinearProgressIndicator(
-                                    backgroundColor: Colors.grey[900],
-                                    color: Colors.red[400]))) ??
+                                    backgroundColor: AppColors.dark,
+                                    color: AppColors.red))) ??
                         const SizedBox(),
                   ],
                 ),

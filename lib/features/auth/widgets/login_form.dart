@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta_app/core/theme/colors.dart';
 import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_event.dart';
@@ -27,12 +28,19 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return SizedBox(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
             child: AutofillGroup(
               child: Form(
                   child: Column(
@@ -46,8 +54,12 @@ class _LoginFormState extends State<LoginForm> {
                       ],
                       controller: _emailController,
                       style: AppStyles.textStyle,
-                      decoration: AppStyles.inputFieldStyle
-                          .copyWith(labelText: 'Email')),
+                      decoration: AppStyles.inputFieldStyle.copyWith(
+                          labelText: 'Email',
+                          icon: Icon(
+                            Icons.email,
+                            color: AppColors.lightDark,
+                          ))),
                   const SizedBox(
                     height: 20,
                   ),
@@ -58,10 +70,12 @@ class _LoginFormState extends State<LoginForm> {
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.password],
                       style: AppStyles.textStyle,
-                      decoration: AppStyles.inputFieldStyle
-                          .copyWith(labelText: 'Password')),
+                      decoration: AppStyles.inputFieldStyle.copyWith(
+                          labelText: 'Password',
+                          icon: Icon(Icons.password_sharp,
+                              color: AppColors.lightDark))),
                   const SizedBox(
-                    height: 20,
+                    height: 30,
                   ),
                   ElevatedButton(
                       style: ButtonStyle(
@@ -69,14 +83,14 @@ class _LoginFormState extends State<LoginForm> {
                               const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10)),
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.white)),
+                              MaterialStateProperty.all(AppColors.white)),
                       onPressed: () => _authBloc.add(AuthEvent.login(
                           email: _emailController.text,
                           password: _passwordController.text)),
                       child: Text('Login',
                           style: AppStyles.textStyle.copyWith(
                               fontSize: 18,
-                              color: Colors.blueAccent,
+                              color: AppColors.cyan,
                               fontWeight: FontWeight.bold))),
                   const SizedBox(
                     height: 20,
@@ -94,7 +108,7 @@ class _LoginFormState extends State<LoginForm> {
                       child: Text('Sign In',
                           style: AppStyles.textStyle.copyWith(
                               fontSize: 18,
-                              color: Colors.white,
+                              color: AppColors.white,
                               fontWeight: FontWeight.bold)))
                 ],
               )),

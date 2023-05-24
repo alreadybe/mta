@@ -11,6 +11,12 @@ class AuthEvent with _$AuthEvent {
     required String password,
   }) = _AuthLogin;
 
+  const factory AuthEvent.checkEmailAndPassword({
+    required String email,
+    required String password,
+    required String repeatPassword,
+  }) = _AuthCheckEmailAndPassword;
+
   const factory AuthEvent.register({
     required String email,
     required String firstname,

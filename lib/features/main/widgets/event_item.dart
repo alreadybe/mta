@@ -10,11 +10,11 @@ class EventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, Event.routeName),
+      onTap: () => Navigator.pushNamed(context, EventPage.routeName),
       child: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: Colors.grey[800]),
@@ -42,19 +42,35 @@ class EventItem extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 Row(
                   children: [
-                    Text(
-                      '${event.tours.toString()} туров',
-                      style: AppStyles.textStyle.copyWith(fontSize: 12),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 8,
+                      child: Text(
+                        '${event.tours.toString()} tour',
+                        style: AppStyles.textStyle.copyWith(fontSize: 12),
+                      ),
                     ),
-                    const SizedBox(
-                      width: 30,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 7,
+                      child: Text(
+                        '${event.pts.toString()} pts',
+                        style: AppStyles.textStyle.copyWith(fontSize: 12),
+                      ),
                     ),
-                    Text(
-                      '${event.pts.toString()} очков',
-                      style: AppStyles.textStyle.copyWith(fontSize: 12),
-                    ),
+                    if (event.elo != null)
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 3,
+                        child: Text(
+                          '${event.elo.toString()} elo restrict',
+                          style: AppStyles.textStyle.copyWith(fontSize: 12),
+                        ),
+                      )
+                    else
+                      const SizedBox(),
                   ],
                 ),
               ],

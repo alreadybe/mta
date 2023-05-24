@@ -12,6 +12,8 @@ class EventModel with _$EventModel {
     required DateTime date,
     required String name,
     String? description,
+    String? reglament,
+    required int memberNumber,
     required EventType type,
     required int tours,
     required int pts,

@@ -20,6 +20,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await event.when(
           initial: () async => _init(emit),
           login: (email, password) async => _login(emit, email, password),
+          checkEmailAndPassword: (email, password, repeatPassword) async =>
+              _checkEmailAndPassword(emit, email, password, repeatPassword),
           register: (email, firstname, nickname, lastname, password,
                   repeatPassword) async =>
               _register(emit, email, firstname, nickname, lastname, password,
@@ -46,6 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthState.unauthenticated());
       return;
     }
+    emit(const AuthState.loading());
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
@@ -72,6 +75,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthState.authenticated(user: user));
   }
 
+  Future<void> _checkEmailAndPassword(Emitter<AuthState> emit, String email,
+      String password, String repeatPassword) async {
+    if (email.trim().isEmpty ||
+        password.trim().isEmpty ||
+        repeatPassword.trim().isEmpty) {
+      emit(const AuthState.error('Please set all field'));
+      emit(const AuthState.unauthenticated());
+      return;
+    }
+
+    final emailValid = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
+
+    if (!emailValid) {
+      emit(const AuthState.error('Please set valid email'));
+      emit(const AuthState.unauthenticated());
+      return;
+    }
+    if (password != repeatPassword) {
+      emit(const AuthState.error("Password doesn't match"));
+      emit(const AuthState.unauthenticated());
+      return;
+    }
+  }
+
   Future<void> _register(
       Emitter<AuthState> emit,
       String email,
@@ -80,21 +109,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String lastname,
       String password,
       String repeatPassword) async {
-    if (email.isEmpty ||
-        firstname.isEmpty ||
-        lastname.isEmpty ||
-        password.isEmpty ||
-        repeatPassword.isEmpty) {
+    if (firstname.isEmpty || lastname.isEmpty) {
       emit(const AuthState.error('Please set all field'));
       emit(const AuthState.unauthenticated());
       return;
     }
-
-    if (password != repeatPassword) {
-      emit(const AuthState.error("Password doesn't match"));
-      emit(const AuthState.unauthenticated());
-    }
-
+    emit(const AuthState.loading());
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
