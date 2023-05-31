@@ -18,7 +18,7 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       await event.mapOrNull(
           apply: (value) async => _apply(emit, value.user, value.event),
           showEvent: (value) async => _showEvent(emit, value.event),
-          error: (value) async => _onError(emit, value.message));
+          error: (value) async => _onError(emit, value.message, value.event));
     });
   }
 
@@ -68,7 +68,9 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     emit(EventState.loaded(event: event));
   }
 
-  Future<void> _onError(Emitter<EventState> emit, String message) async {
+  Future<void> _onError(
+      Emitter<EventState> emit, String message, EventModel event) async {
     emit(EventState.error(message));
+    emit(EventState.loaded(event: event));
   }
 }

@@ -67,6 +67,7 @@ dependencies:
   logger_flutter_v2: ^1.0.3
   shared_preferences: ^2.0.15
   flutter_svg: ^2.0.6
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   build_runner: ^2.2.0

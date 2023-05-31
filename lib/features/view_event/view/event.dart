@@ -7,7 +7,9 @@ import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_state.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/view_event/bloc/event_bloc.dart';
+import 'package:mta_app/models/event_model.dart';
 import 'package:mta_app/models/user_type_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key});
@@ -27,6 +29,18 @@ class _EventPageState extends State<EventPage> {
     _eventBloc = context.read();
     _mainBloc = context.read();
     super.initState();
+  }
+
+  Future<void> _launchUrl(Uri url, EventModel event) async {
+    try {
+      if (!await launchUrl(url)) {
+        _eventBloc.add(EventEvent.error(
+            message: 'Broken link, contact to org', event: event));
+      }
+    } on Exception {
+      _eventBloc.add(EventEvent.error(
+          message: 'Broken link, contact to org', event: event));
+    }
   }
 
   @override
@@ -155,7 +169,11 @@ class _EventPageState extends State<EventPage> {
                                             horizontal: 20, vertical: 10)),
                                     backgroundColor: MaterialStateProperty.all(
                                         AppColors.cyan)),
-                                onPressed: () {},
+                                onPressed: () {
+                                  _launchUrl(
+                                      Uri.parse(value.event.reglament ?? ''),
+                                      value.event);
+                                },
                                 child: Text('Go to reglament',
                                     style: AppStyles.textStyle.copyWith(
                                         fontSize: 16,

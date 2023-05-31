@@ -11,5 +11,6 @@ class EventEvent with _$EventEvent {
   }) = _ApplyUserEvent;
   factory EventEvent.error({
     required String message,
+    required EventModel event,
   }) = _EventError;
 }
