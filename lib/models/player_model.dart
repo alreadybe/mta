@@ -8,7 +8,12 @@ part 'player_model.g.dart';
 class PlayerModel with _$PlayerModel {
   const factory PlayerModel({
     required String id,
-    required String name,
+    required String userId,
+    String? faction,
+    String? roster,
+    required String firstname,
+    required String lastname,
+    String? nickname,
     required int to,
     required int vp,
     required int primary,

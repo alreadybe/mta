@@ -9,6 +9,9 @@ import 'package:mta_app/features/create_event/view/create_event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/main/view/I_page.dart';
 import 'package:mta_app/features/main/widgets/event_item.dart';
+import 'package:mta_app/features/view_event/bloc/event_bloc.dart';
+import 'package:mta_app/features/view_event/view/event.dart';
+import 'package:mta_app/models/event_model.dart';
 import 'package:mta_app/models/user_type_model.dart';
 
 class Event extends StatefulWidget implements IPage {
@@ -25,11 +28,18 @@ class Event extends StatefulWidget implements IPage {
 
 class _EventState extends State<Event> {
   late final MainBloc _mainBloc;
+  late final EventBloc _eventBloc;
 
   @override
   void initState() {
     super.initState();
     _mainBloc = context.read();
+    _eventBloc = context.read();
+  }
+
+  void openEventCallback(EventModel event) {
+    _eventBloc.add(EventEvent.showEvent(event: event));
+    Navigator.pushNamed(context, EventPage.routeName);
   }
 
   @override
@@ -74,7 +84,11 @@ class _EventState extends State<Event> {
                             itemCount: value.events.length,
                             itemBuilder: (context, index) => Padding(
                               padding: const EdgeInsets.only(bottom: 5),
-                              child: EventItem(event: value.events[index]),
+                              child: EventItem(
+                                event: value.events[index],
+                                callback: () =>
+                                    openEventCallback(value.events[index]),
+                              ),
                             ),
                           ),
                         ) ??

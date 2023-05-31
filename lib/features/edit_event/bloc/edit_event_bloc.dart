@@ -6,18 +6,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mta_app/features/event/widgets/pairing_row.dart';
+import 'package:mta_app/features/edit_event/widgets/pairing_row.dart';
 import 'package:mta_app/models/pairing_model.dart';
 import 'package:mta_app/models/player_model.dart';
 
-part 'event_bloc.freezed.dart';
-part 'event_event.dart';
-part 'event_state.dart';
+part 'edit_event_bloc.freezed.dart';
+part 'edit_event_event.dart';
+part 'edit_event_state.dart';
 
 @injectable
-class EventBloc extends Bloc<EventEvent, EventState> {
-  EventBloc() : super(EventState.initial()) {
-    on<EventEvent>((event, emit) async {
+class EditEventBlock extends Bloc<EditEventEvent, EditEventState> {
+  EditEventBlock() : super(EditEventState.initial()) {
+    on<EditEventEvent>((event, emit) async {
       await event.when(
           selectTour: (tour) => _selectTour(emit, tour),
           saveTourResult: (pairingKeys, tour) async =>
@@ -30,7 +30,7 @@ class EventBloc extends Bloc<EventEvent, EventState> {
   final CollectionReference eventCollection =
       FirebaseFirestore.instance.collection('events');
 
-  Future<void> _selectTour(Emitter<EventState> emit, int tour) async {
+  Future<void> _selectTour(Emitter<EditEventState> emit, int tour) async {
     final eventQuery =
         await eventCollection.where('id', isEqualTo: eventId).get();
     final event = eventQuery.docs.first.data() as Map<String, dynamic>;
@@ -45,16 +45,16 @@ class EventBloc extends Bloc<EventEvent, EventState> {
 
     switch (tour) {
       case 1:
-        emit(EventState.firstTour(pairings, currentPairings, players));
+        emit(EditEventState.firstTour(pairings, currentPairings, players));
         break;
       case 2:
-        emit(EventState.secondTour(pairings!, currentPairings, players!));
+        emit(EditEventState.secondTour(pairings!, currentPairings, players!));
         break;
       case 3:
-        emit(EventState.thirdTour(pairings!, currentPairings, players!));
+        emit(EditEventState.thirdTour(pairings!, currentPairings, players!));
         break;
       case 4:
-        emit(EventState.finalResult(_sortPlayers(players!)));
+        emit(EditEventState.finalResult(_sortPlayers(players!)));
         break;
       default:
     }
@@ -86,25 +86,33 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       final players = await _getPlayers(event);
 
       final player1 = PlayerModel(
-        id: players != null
-            ? players.firstWhere((element) => element.name == playerOneName).id
-            : UniqueKey().toString(),
-        name: playerOneName,
-        to: playerOneTO,
-        vp: playerOneVP,
-        primary: playerOnePrimary,
-        toOpponents: playerTwoTO,
-      );
+          id: players != null
+              ? players
+                  .firstWhere((element) => element.nickname == playerOneName)
+                  .id
+              : UniqueKey().toString(),
+          nickname: playerOneName,
+          to: playerOneTO,
+          vp: playerOneVP,
+          primary: playerOnePrimary,
+          toOpponents: playerTwoTO,
+          firstname: '',
+          lastname: '',
+          userId: '');
       final player2 = PlayerModel(
-        id: players != null
-            ? players.firstWhere((element) => element.name == playerTwoName).id
-            : UniqueKey().toString(),
-        name: playerTwoName,
-        to: playerTwoTO,
-        vp: playerTwoVP,
-        primary: playerTwoPrimary,
-        toOpponents: playerOneTO,
-      );
+          id: players != null
+              ? players
+                  .firstWhere((element) => element.nickname == playerTwoName)
+                  .id
+              : UniqueKey().toString(),
+          nickname: playerTwoName,
+          to: playerTwoTO,
+          vp: playerTwoVP,
+          primary: playerTwoPrimary,
+          toOpponents: playerOneTO,
+          firstname: '',
+          lastname: '',
+          userId: '');
 
       tourResult.add([player1, player2]);
     }
@@ -157,8 +165,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
         : null;
   }
 
-  Future<void> _saveTourResult(
-      Emitter<EventState> emit, List<GlobalKey> pairingKeys, int tour) async {
+  Future<void> _saveTourResult(Emitter<EditEventState> emit,
+      List<GlobalKey> pairingKeys, int tour) async {
     final pairings = await _getTourResult(pairingKeys, eventId);
     // emit(EventState.loading());
 
@@ -180,14 +188,17 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       } else {
         for (final oldPlayer in players) {
           final newPlayer = newPlayerResults
-              .firstWhere((element) => element.name == oldPlayer.name);
+              .firstWhere((element) => element.nickname == oldPlayer.nickname);
           updatedPlayers.add(PlayerModel(
               id: oldPlayer.id,
-              name: oldPlayer.name,
+              nickname: oldPlayer.nickname,
               to: oldPlayer.to + newPlayer.to,
               vp: oldPlayer.vp + newPlayer.vp,
               primary: oldPlayer.primary + newPlayer.primary,
-              toOpponents: oldPlayer.toOpponents + newPlayer.toOpponents));
+              toOpponents: oldPlayer.toOpponents + newPlayer.toOpponents,
+              firstname: '',
+              lastname: '',
+              userId: ''));
         }
       }
 
@@ -211,8 +222,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     await EasyLoading.showSuccess('Success');
   }
 
-  Future<void> _onError(Emitter<EventState> emit, String message) async {
-    emit(EventState.error(message));
+  Future<void> _onError(Emitter<EditEventState> emit, String message) async {
+    emit(EditEventState.error(message));
   }
 
   int _getTO(int vp) {

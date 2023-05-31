@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mta_app/const/assets/assets.gen.dart';
-import 'package:mta_app/features/event/bloc/event_bloc.dart';
-import 'package:mta_app/features/event/widgets/pairing_row.dart';
+import 'package:mta_app/features/edit_event/bloc/edit_event_bloc.dart';
+import 'package:mta_app/features/edit_event/widgets/pairing_row.dart';
 
-class EventPage extends StatefulWidget {
-  const EventPage({super.key});
+class EditEventPage extends StatefulWidget {
+  const EditEventPage({super.key});
 
-  static const routeName = 'event';
+  static const routeName = 'edit_event';
 
   @override
-  State<EventPage> createState() => _EventPageState();
+  State<EditEventPage> createState() => _EditEventPageState();
 }
 
-class _EventPageState extends State<EventPage> {
-  late EventBloc _eventBloc;
+class _EditEventPageState extends State<EditEventPage> {
+  late EditEventBlock _eventBloc;
   late String eventId;
   late Map<GlobalKey, Widget> pairingRows;
 
@@ -28,7 +28,7 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<EventBloc, EventState>(
+    return BlocConsumer<EditEventBlock, EditEventState>(
       listener: (context, state) => state.mapOrNull(),
       builder: (context, state) {
         final index = state.mapOrNull(
@@ -41,7 +41,7 @@ class _EventPageState extends State<EventPage> {
         return Scaffold(
           floatingActionButton: FloatingActionButton(
               child: const Icon(Icons.save),
-              onPressed: () => _eventBloc.add(EventEvent.saveTourResult(
+              onPressed: () => _eventBloc.add(EditEventEvent.saveTourResult(
                   pairingKeys: pairingRows.keys.toList(), tour: index + 1))),
           body: SingleChildScrollView(
             child: state.mapOrNull(
@@ -107,7 +107,7 @@ class _EventPageState extends State<EventPage> {
                   ...value.players.map((player) => Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text('Name: ${player.name}'),
+                          Text('Name: ${player.nickname}'),
                           Text('TO: ${player.to.toString()}'),
                           Text('VP: ${player.vp.toString()}'),
                           Text('Primary: ${player.primary.toString()}'),
@@ -126,7 +126,8 @@ class _EventPageState extends State<EventPage> {
                       showSelectedLabels: false,
                       showUnselectedLabels: false,
                       onTap: (value) {
-                        _eventBloc.add(EventEvent.selectTour(tour: value + 1));
+                        _eventBloc
+                            .add(EditEventEvent.selectTour(tour: value + 1));
                         pairingRows.clear();
                       },
                       currentIndex: index,

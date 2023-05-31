@@ -10,12 +10,13 @@ import 'package:mta_app/features/auth/view/login.dart';
 import 'package:mta_app/features/auth/view/signin.dart';
 import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
 import 'package:mta_app/features/create_event/view/create_event.dart';
-import 'package:mta_app/features/event/bloc/event_bloc.dart';
-import 'package:mta_app/features/event/view/edit_event.dart';
-import 'package:mta_app/features/event/view/event.dart';
+import 'package:mta_app/features/edit_event/bloc/edit_event_bloc.dart';
+import 'package:mta_app/features/edit_event/view/edit_event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/main/view/main_page.dart';
 import 'package:mta_app/features/notfound/notfound_page.dart';
+import 'package:mta_app/features/view_event/bloc/event_bloc.dart';
+import 'package:mta_app/features/view_event/view/event.dart';
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
@@ -39,9 +40,10 @@ class _AppState extends State<App> {
         providers: [
           BlocProvider<CreateEventBloc>(create: (context) => locator.get()),
           BlocProvider<MainBloc>(create: (context) => locator.get()),
-          BlocProvider<EventBloc>(
+          BlocProvider<EventBloc>(create: (context) => locator.get()),
+          BlocProvider<EditEventBlock>(
               create: (context) =>
-                  locator.get()..add(EventEvent.selectTour(tour: 1))),
+                  locator.get()..add(EditEventEvent.selectTour(tour: 1))),
           BlocProvider<AuthBloc>(
               create: (context) =>
                   locator.get()..add(const AuthEvent.initial()))

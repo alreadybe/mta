@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mta_app/models/event_type.dart';
+import 'package:mta_app/models/player_model.dart';
 
 part 'event_model.freezed.dart';
 
@@ -9,6 +10,7 @@ part 'event_model.g.dart';
 class EventModel with _$EventModel {
   const factory EventModel({
     required String id,
+    required String orgUserId,
     required DateTime date,
     required String name,
     String? description,
@@ -17,6 +19,7 @@ class EventModel with _$EventModel {
     required EventType type,
     required int tours,
     required int pts,
+    List<PlayerModel>? appliedPlayers,
     int? elo,
   }) = _EventModel;
 

@@ -69,12 +69,13 @@ class _MainPageState extends State<MainPage> {
                 backgroundColor: AppColors.dark,
                 bottomNavigationBar: BottomNavigationBar(
                     selectedLabelStyle:
-                        AppStyles.textStyle.copyWith(color: AppColors.dark),
-                    unselectedLabelStyle:
-                        AppStyles.textStyle.copyWith(color: AppColors.dark),
+                        AppStyles.textStyle.copyWith(color: AppColors.white),
+                    selectedIconTheme: IconThemeData(color: AppColors.cyan),
+                    showSelectedLabels: false,
+                    unselectedLabelStyle: AppStyles.textStyle,
+                    selectedItemColor: AppColors.white,
                     backgroundColor: AppColors.lightDark,
                     unselectedItemColor: AppColors.white,
-                    selectedItemColor: AppColors.cyan,
                     type: BottomNavigationBarType.fixed,
                     currentIndex: currentIndex,
                     onTap: onItemTapped,

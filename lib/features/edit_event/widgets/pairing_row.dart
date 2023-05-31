@@ -24,10 +24,10 @@ class PairingRowState extends State<PairingRow> {
   void initState() {
     super.initState();
     firstPlayerController =
-        TextEditingController(text: widget.pairing?.first.name);
+        TextEditingController(text: widget.pairing?.first.nickname);
     firstPlayerPrimaryResultController = TextEditingController();
     secondPlayerController =
-        TextEditingController(text: widget.pairing?.last.name);
+        TextEditingController(text: widget.pairing?.last.nickname);
     secondPlayerPrimaryResultController = TextEditingController();
   }
 
