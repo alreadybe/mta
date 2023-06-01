@@ -12,6 +12,7 @@ import 'package:mta_app/features/main/view/pages/elo.dart';
 import 'package:mta_app/features/main/view/pages/event.dart';
 import 'package:mta_app/features/main/view/pages/settings.dart';
 import 'package:mta_app/features/main/view/pages/stats.dart';
+import 'package:mta_app/features/manage_users/view/manage_users_page.dart';
 import 'package:mta_app/models/user_type_model.dart';
 
 class MainPage extends StatefulWidget {
@@ -97,7 +98,8 @@ class _MainPageState extends State<MainPage> {
                         authenticated: (value) =>
                             value.user.userType.contains(UserType.ADMIN)
                                 ? IconButton(
-                                    onPressed: () {},
+                                    onPressed: () => Navigator.pushNamed(
+                                        context, ManageUsersPage.routeName),
                                     icon: Icon(
                                       Icons.supervised_user_circle,
                                       color: AppColors.cyan,

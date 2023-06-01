@@ -14,6 +14,8 @@ import 'package:mta_app/features/edit_event/bloc/edit_event_bloc.dart';
 import 'package:mta_app/features/edit_event/view/edit_event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/main/view/main_page.dart';
+import 'package:mta_app/features/manage_users/bloc/manage_users_bloc.dart';
+import 'package:mta_app/features/manage_users/view/manage_users_page.dart';
 import 'package:mta_app/features/notfound/notfound_page.dart';
 import 'package:mta_app/features/view_event/bloc/event_bloc.dart';
 import 'package:mta_app/features/view_event/view/event.dart';
@@ -38,6 +40,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
+          BlocProvider<ManageUsersBloc>(create: (context) => locator.get()),
           BlocProvider<CreateEventBloc>(create: (context) => locator.get()),
           BlocProvider<MainBloc>(create: (context) => locator.get()),
           BlocProvider<EventBloc>(create: (context) => locator.get()),
@@ -60,6 +63,7 @@ class _AppState extends State<App> {
             CreateEvent.routeName: (context) => const CreateEvent(),
             EventPage.routeName: (context) => const EventPage(),
             EditEventPage.routeName: (context) => const EditEventPage(),
+            ManageUsersPage.routeName: (context) => const ManageUsersPage()
           },
           onUnknownRoute: (rs) =>
               MaterialPageRoute(builder: (context) => const NotFoundPage()),

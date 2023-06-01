@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mta_app/core/theme/colors.dart';
 import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/view_event/bloc/event_bloc.dart';
 import 'package:mta_app/models/event_model.dart';
@@ -21,7 +22,7 @@ class EventItem extends StatelessWidget {
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey[800]),
+                    color: AppColors.lightDark),
                 child: Column(
                   children: [
                     Row(
