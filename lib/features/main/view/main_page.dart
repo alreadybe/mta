@@ -72,7 +72,6 @@ class _MainPageState extends State<MainPage> {
                     selectedLabelStyle:
                         AppStyles.textStyle.copyWith(color: AppColors.white),
                     selectedIconTheme: IconThemeData(color: AppColors.cyan),
-                    showSelectedLabels: false,
                     unselectedLabelStyle: AppStyles.textStyle,
                     selectedItemColor: AppColors.white,
                     backgroundColor: AppColors.lightDark,

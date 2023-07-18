@@ -7,7 +7,9 @@ import 'package:mta_app/core/theme/styles.dart';
 import 'package:mta_app/features/auth/bloc/auth_bloc.dart';
 import 'package:mta_app/features/auth/bloc/auth_state.dart';
 import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
+import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/models/event_model.dart';
+import 'package:mta_app/models/event_status.dart';
 import 'package:mta_app/models/event_type.dart';
 
 class CreateEvent extends StatefulWidget {
@@ -36,6 +38,7 @@ class _CreateEventState extends State<CreateEvent> {
   bool settedDate = false;
 
   late final CreateEventBloc _createEventBloc;
+  late final MainBloc _mainBloc;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -52,6 +55,7 @@ class _CreateEventState extends State<CreateEvent> {
 
     _eventType = EventType.SOLO;
 
+    _mainBloc = context.read();
     _createEventBloc = context.read();
   }
 
@@ -74,6 +78,7 @@ class _CreateEventState extends State<CreateEvent> {
       state.mapOrNull(
           loading: (value) => EasyLoading.show(),
           created: (value) {
+            _mainBloc.add(MainEvent.getData(filter: {}));
             Navigator.pop(context);
             EasyLoading.showSuccess('Event created');
           },
@@ -422,6 +427,8 @@ class _CreateEventState extends State<CreateEvent> {
         settedTime &&
         int.tryParse(_memberNumber.text) != null) {
       final event = EventModel(
+        activeTour: 0,
+        status: EventStatus.INCOMING,
         id: UniqueKey().toString(),
         date: _eventDate!.add(_eventTime!),
         name: _eventNameController.value.text,

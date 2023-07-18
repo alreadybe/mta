@@ -38,7 +38,7 @@ extension GetItInjectableX on _i1.GetIt {
     final sharedPreferencesModule = _$SharedPreferencesModule();
     gh.factory<_i3.AuthBloc>(() => _i3.AuthBloc());
     gh.factory<_i4.CreateEventBloc>(() => _i4.CreateEventBloc());
-    gh.factory<_i5.EditEventBlock>(() => _i5.EditEventBlock());
+    gh.factory<_i5.EditEventBloc>(() => _i5.EditEventBloc());
     gh.factory<_i6.EventBloc>(() => _i6.EventBloc());
     gh.singleton<_i7.GlobalNavigator>(_i7.GlobalNavigator());
     gh.factory<_i8.MainBloc>(() => _i8.MainBloc());

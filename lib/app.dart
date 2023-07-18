@@ -12,6 +12,7 @@ import 'package:mta_app/features/create_event/bloc/create_event_bloc.dart';
 import 'package:mta_app/features/create_event/view/create_event.dart';
 import 'package:mta_app/features/edit_event/bloc/edit_event_bloc.dart';
 import 'package:mta_app/features/edit_event/view/edit_event.dart';
+import 'package:mta_app/features/edit_event/view/start_event.dart';
 import 'package:mta_app/features/main/bloc/main_bloc.dart';
 import 'package:mta_app/features/main/view/main_page.dart';
 import 'package:mta_app/features/manage_users/bloc/manage_users_bloc.dart';
@@ -44,9 +45,7 @@ class _AppState extends State<App> {
           BlocProvider<CreateEventBloc>(create: (context) => locator.get()),
           BlocProvider<MainBloc>(create: (context) => locator.get()),
           BlocProvider<EventBloc>(create: (context) => locator.get()),
-          BlocProvider<EditEventBlock>(
-              create: (context) =>
-                  locator.get()..add(EditEventEvent.selectTour(tour: 1))),
+          BlocProvider<EditEventBloc>(create: (context) => locator.get()),
           BlocProvider<AuthBloc>(
               create: (context) =>
                   locator.get()..add(const AuthEvent.initial()))
@@ -62,6 +61,7 @@ class _AppState extends State<App> {
             SignInPage.routeName: (context) => const SignInPage(),
             CreateEvent.routeName: (context) => const CreateEvent(),
             EventPage.routeName: (context) => const EventPage(),
+            StartEventPage.routeName: (context) => const StartEventPage(),
             EditEventPage.routeName: (context) => const EditEventPage(),
             ManageUsersPage.routeName: (context) => const ManageUsersPage()
           },

@@ -1,12 +1,12 @@
 // ignore_for_file: cascade_invocations
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mta_app/features/edit_event/widgets/pairing_row.dart';
+import 'package:mta_app/models/event_model.dart';
+import 'package:mta_app/models/event_status.dart';
 import 'package:mta_app/models/pairing_model.dart';
 import 'package:mta_app/models/player_model.dart';
 
@@ -15,211 +15,140 @@ part 'edit_event_event.dart';
 part 'edit_event_state.dart';
 
 @injectable
-class EditEventBlock extends Bloc<EditEventEvent, EditEventState> {
-  EditEventBlock() : super(EditEventState.initial()) {
+class EditEventBloc extends Bloc<EditEventEvent, EditEventState> {
+  EditEventBloc() : super(EditEventState.initial()) {
     on<EditEventEvent>((event, emit) async {
       await event.when(
-          selectTour: (tour) => _selectTour(emit, tour),
-          saveTourResult: (pairingKeys, tour) async =>
-              _saveTourResult(emit, pairingKeys, tour),
-          error: (message) async => _onError(emit, message));
+          finishEvent: (event) => _finishEvent(emit, event),
+          startEvent: (event, currentTourPairings) =>
+              _startEvent(emit, event, currentTourPairings),
+          selectTour: (tour, event) => _selectTour(emit, tour, event),
+          loadEvent: (event) => _loadEvent(emit, event),
+          error: (message) => _onError(emit, message),
+          saveTourResult: (tour, event, currentTourPairings) =>
+              _saveTourResult(emit, tour, event, currentTourPairings));
     });
   }
 
-  static const String eventId = '[#1f567]';
-  final CollectionReference eventCollection =
-      FirebaseFirestore.instance.collection('events');
-
-  Future<void> _selectTour(Emitter<EditEventState> emit, int tour) async {
+  Future<void> _finishEvent(
+      Emitter<EditEventState> emit, EventModel event) async {
     final eventQuery =
-        await eventCollection.where('id', isEqualTo: eventId).get();
-    final event = eventQuery.docs.first.data() as Map<String, dynamic>;
-    final players = await _getPlayers(event);
+        await eventCollection.where('id', isEqualTo: event.id).get();
+    final eventModel = EventModel.fromJson(
+        eventQuery.docs.first.data() as Map<String, dynamic>);
 
-    final currentPairings = await _getCurrentTourPairings(eventId, tour);
-    var pairings = await _pairingsToModel(currentPairings, eventId);
+    final players = _getPlayers(eventModel.eventPairings!);
+    await eventQuery.docs.first.reference.update(
+        {'activeTour': event.tours + 1, 'status': EventStatus.FINISHED.name});
 
-    if (tour > 1) {
-      pairings ??= await _nextTourPairings(eventId, tour);
-    }
-
-    switch (tour) {
-      case 1:
-        emit(EditEventState.firstTour(pairings, currentPairings, players));
-        break;
-      case 2:
-        emit(EditEventState.secondTour(pairings!, currentPairings, players!));
-        break;
-      case 3:
-        emit(EditEventState.thirdTour(pairings!, currentPairings, players!));
-        break;
-      case 4:
-        emit(EditEventState.finalResult(_sortPlayers(players!)));
-        break;
-      default:
-    }
+    emit(EditEventState.eventFinished(
+        event: event, result: _sortPlayers(players)));
   }
 
-  Future<List<List<PlayerModel>>> _getTourResult(
-      List<GlobalKey> pairingKeys, String eventId) async {
-    final tourResult = <List<PlayerModel>>[];
-    for (final key in pairingKeys) {
-      final newKey = key as GlobalKey<PairingRowState>;
-
-      final playerOneName = newKey.currentState!.firstPlayerController.text;
-      final playerTwoName = newKey.currentState!.secondPlayerController.text;
-
-      final playerOnePrimary = int.parse(
-          newKey.currentState!.firstPlayerPrimaryResultController.text);
-      final playerTwoPrimary = int.parse(
-          newKey.currentState!.secondPlayerPrimaryResultController.text);
-
-      final playerOneVP = _getVp(playerOnePrimary, playerTwoPrimary);
-      final playerTwoVP = _getVp(playerTwoPrimary, playerOnePrimary);
-
-      final playerOneTO = _getTO(playerOneVP);
-      final playerTwoTO = _getTO(playerTwoVP);
-
-      final eventQuery =
-          await eventCollection.where('id', isEqualTo: eventId).get();
-      final event = eventQuery.docs.first.data() as Map<String, dynamic>;
-      final players = await _getPlayers(event);
-
-      final player1 = PlayerModel(
-          id: players != null
-              ? players
-                  .firstWhere((element) => element.nickname == playerOneName)
-                  .id
-              : UniqueKey().toString(),
-          nickname: playerOneName,
-          to: playerOneTO,
-          vp: playerOneVP,
-          primary: playerOnePrimary,
-          toOpponents: playerTwoTO,
-          firstname: '',
-          lastname: '',
-          userId: '');
-      final player2 = PlayerModel(
-          id: players != null
-              ? players
-                  .firstWhere((element) => element.nickname == playerTwoName)
-                  .id
-              : UniqueKey().toString(),
-          nickname: playerTwoName,
-          to: playerTwoTO,
-          vp: playerTwoVP,
-          primary: playerTwoPrimary,
-          toOpponents: playerOneTO,
-          firstname: '',
-          lastname: '',
-          userId: '');
-
-      tourResult.add([player1, player2]);
-    }
-
-    return tourResult;
-  }
-
-  Future<List<List<PlayerModel>>?> _pairingsToModel(
-      List<PairingModel>? currentTour, String eventId) async {
-    final eventQuery =
-        await eventCollection.where('id', isEqualTo: eventId).get();
-    final event = eventQuery.docs.first.data() as Map<String, dynamic>;
-    final players = await _getPlayers(event);
-    if (currentTour == null) {
-      return null;
-    }
-    final currentTourPairings = currentTour
-        .map((pairing) => pairing.players
-            .map((playerId) =>
-                players!.firstWhere((player) => player.id == playerId))
-            .toList())
-        .toList();
-
-    return currentTourPairings;
-  }
-
-  Future<List<PairingModel>?> _getCurrentTourPairings(
-      String eventId, int tour) async {
-    final eventQuery =
-        await eventCollection.where('id', isEqualTo: eventId).get();
-    final event = eventQuery.docs.first.data() as Map<String, dynamic>;
-    if (!event.containsKey('tour$tour') || !event.containsKey('players')) {
-      return null;
-    }
-
-    final currentTour = (event['tour$tour'] as List)
-        .map((e) => PairingModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    return currentTour;
-  }
-
-  Future<List<PlayerModel>?> _getPlayers(Map<String, dynamic> event) async {
-    final players = event['players'];
-
-    return players != null
-        ? (players as List)
-            .map((e) => PlayerModel.fromJson(e as Map<String, dynamic>))
-            .toList()
-        : null;
-  }
-
-  Future<void> _saveTourResult(Emitter<EditEventState> emit,
-      List<GlobalKey> pairingKeys, int tour) async {
-    final pairings = await _getTourResult(pairingKeys, eventId);
-    // emit(EventState.loading());
-
+  Future<void> _startEvent(Emitter<EditEventState> emit, EventModel event,
+      List<PairingModel> currentTourPairings) async {
     try {
       final eventQuery =
-          await eventCollection.where('id', isEqualTo: eventId).get();
-      final event = eventQuery.docs.first.data() as Map<String, dynamic>;
-      final players = await _getPlayers(event);
-      final newPlayerResults = <PlayerModel>[];
-      var updatedPlayers = <PlayerModel>[];
-
-      for (final element in pairings) {
-        for (final element2 in element) {
-          newPlayerResults.add(element2);
-        }
-      }
-      if (players == null) {
-        updatedPlayers = newPlayerResults;
-      } else {
-        for (final oldPlayer in players) {
-          final newPlayer = newPlayerResults
-              .firstWhere((element) => element.nickname == oldPlayer.nickname);
-          updatedPlayers.add(PlayerModel(
-              id: oldPlayer.id,
-              nickname: oldPlayer.nickname,
-              to: oldPlayer.to + newPlayer.to,
-              vp: oldPlayer.vp + newPlayer.vp,
-              primary: oldPlayer.primary + newPlayer.primary,
-              toOpponents: oldPlayer.toOpponents + newPlayer.toOpponents,
-              firstname: '',
-              lastname: '',
-              userId: ''));
-        }
-      }
-
-      final formatPlayer = updatedPlayers.map((e) => e.toJson()).toList();
-      final formatTourResult = <PairingModel>[];
-
-      for (final pairing in pairings) {
-        formatTourResult.add(PairingModel(
-            players: [pairing.first.id, pairing.last.id],
-            toRes: [pairing.first.to, pairing.last.to],
-            vpRes: [pairing.first.vp, pairing.last.vp]));
-      }
+          await eventCollection.where('id', isEqualTo: event.id).get();
 
       await eventQuery.docs.first.reference.update({
-        'players': formatPlayer,
-        'tour$tour': formatTourResult.map((e) => e.toJson()).toList()
+        'eventPairings': currentTourPairings.map((e) => e.toJson()).toList(),
+        'activeTour': 1,
+        'status': EventStatus.INPROGRESS.name
       });
     } on Exception catch (e) {
       await EasyLoading.showError(e.toString());
     }
-    await EasyLoading.showSuccess('Success');
+
+    final eventQuery =
+        await eventCollection.where('id', isEqualTo: event.id).get();
+    final eventModel = EventModel.fromJson(
+        eventQuery.docs.first.data() as Map<String, dynamic>);
+    emit(EditEventState.eventStarted(event: eventModel));
+    emit(EditEventState.loaded(event: eventModel, tour: 1));
+  }
+
+  Future<void> _loadEvent(
+      Emitter<EditEventState> emit, EventModel event) async {
+    emit(EditEventState.loaded(
+        event: event,
+        tour: event.status == EventStatus.FINISHED
+            ? event.tours + 1
+            : event.activeTour));
+  }
+
+  final CollectionReference eventCollection =
+      FirebaseFirestore.instance.collection('events');
+
+  Future<void> _selectTour(
+      Emitter<EditEventState> emit, int tour, EventModel event) async {
+    emit(EditEventState.loading());
+    final eventQuery =
+        await eventCollection.where('id', isEqualTo: event.id).get();
+    final eventModel = EventModel.fromJson(
+        eventQuery.docs.first.data() as Map<String, dynamic>);
+
+    final players = _getPlayers(eventModel.eventPairings!);
+
+    if (tour > event.tours) {
+      emit(EditEventState.eventFinished(
+          event: event, result: _sortPlayers(players)));
+    } else {
+      emit(EditEventState.loaded(event: eventModel, tour: tour));
+    }
+  }
+
+  Future<void> _saveTourResult(Emitter<EditEventState> emit, int tour,
+      EventModel event, List<PairingModel> currentTourPairings) async {
+    final eventQuery =
+        await eventCollection.where('id', isEqualTo: event.id).get();
+
+    final updatedEvent = EventModel.fromJson(
+        eventQuery.docs.first.data() as Map<String, dynamic>);
+
+    final tourResult = currentTourPairings.map((e) {
+      final player1VP = _getVp(e.player1PRIM!, e.player2PRIM!);
+      final player2VP = _getVp(e.player2PRIM!, e.player1PRIM!);
+
+      return e.copyWith(
+        player1: e.player1.copyWith(
+            primary: e.player1.primary + e.player1PRIM!,
+            vp: e.player1.vp + player1VP,
+            to: e.player1.to + _getTO(player1VP)),
+        player2: e.player2.copyWith(
+            primary: e.player2.primary + e.player2PRIM!,
+            vp: e.player2.vp + player2VP,
+            to: e.player2.to + _getTO(player2VP)),
+        player1VP: player1VP,
+        player2VP: player2VP,
+        player1TO: _getTO(player1VP),
+        player2TO: _getTO(player2VP),
+      );
+    }).toList();
+
+    final players = _getPlayers(tourResult);
+
+    final nextTour = await _nextTourPairings(tourResult, tour);
+
+    final previousRounds = <PairingModel>[];
+
+    for (var i = 1; i < tour; i++) {
+      previousRounds.addAll(
+          updatedEvent.eventPairings!.where((element) => element.round == i));
+    }
+    try {
+      await eventQuery.docs.first.reference.update({
+        'eventPairings': [...previousRounds, ...tourResult, ...nextTour]
+            .map((e) => e.toJson())
+            .toList(),
+        'appliedPlayers': players.map((e) => e.toJson()).toList(),
+        'activeTour': tour + 1
+      });
+    } on Exception catch (e) {
+      await EasyLoading.showError(e.toString());
+    }
+
+    await _selectTour(emit, tour + 1, event);
   }
 
   Future<void> _onError(Emitter<EditEventState> emit, String message) async {
@@ -227,9 +156,9 @@ class EditEventBlock extends Bloc<EditEventEvent, EditEventState> {
   }
 
   int _getTO(int vp) {
-    if (vp > 11) {
+    if (vp > 10) {
       return 3;
-    } else if (vp < 9) {
+    } else if (vp < 10) {
       return 0;
     } else {
       return 1;
@@ -261,34 +190,18 @@ class EditEventBlock extends Bloc<EditEventEvent, EditEventState> {
     }
   }
 
-  bool _alreadyPlayed(Map<String, dynamic> event, int tour, PlayerModel player1,
+  bool _alreadyPlayed(List<PairingModel> eventPairings, PlayerModel player1,
       PlayerModel player2) {
-    var result = false;
-    if (player1 == player2) return true;
-    if (tour == 1) return false;
-    if (tour > 1) {
-      final firstTour = (event['tour1'] as List)
-          .map((e) => PairingModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      for (final pairing in firstTour) {
-        if (pairing.players.contains(player1.id) &&
-            pairing.players.contains(player2.id)) {
-          result = true;
-        }
-      }
-    }
-    if (tour > 2) {
-      final secondTour = (event['tour2'] as List)
-          .map((e) => PairingModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      for (final pairing in secondTour) {
-        if (pairing.players.contains(player1.id) &&
-            pairing.players.contains(player2.id)) {
-          result = true;
-        }
-      }
-    }
-    return result;
+    if (player1.id == player2.id) return true;
+
+    return eventPairings
+        .where((pairing) =>
+            (pairing.player1.id == player1.id ||
+                pairing.player1.id == player2.id) &&
+            (pairing.player2.id == player1.id ||
+                pairing.player2.id == player2.id))
+        .toList()
+        .isNotEmpty;
   }
 
   List<PlayerModel> _sortPlayers(List<PlayerModel> players) {
@@ -312,31 +225,36 @@ class EditEventBlock extends Bloc<EditEventEvent, EditEventState> {
     return players;
   }
 
-  Future<List<List<PlayerModel>>> _nextTourPairings(
-      String eventId, int tour) async {
-    final eventQuery =
-        await eventCollection.where('id', isEqualTo: eventId).get();
-    final event = eventQuery.docs.first.data() as Map<String, dynamic>;
-    final rawPlayers = await _getPlayers(event);
-    if (rawPlayers == null) return [];
+  List<PlayerModel> _getPlayers(List<PairingModel> pairings) {
+    final seen = <String>{};
+    final rawPlayers1 = pairings.map((e) => e.player1);
+    final rawPlayers2 = pairings.map((e) => e.player2);
+    return [...rawPlayers1, ...rawPlayers2]
+        .where((element) => seen.add(element.id))
+        .toList();
+  }
+
+  Future<List<PairingModel>> _nextTourPairings(
+      List<PairingModel> eventPairings, int tour) async {
+    final rawPlayers = _getPlayers(eventPairings);
     final players = _sortPlayers(rawPlayers);
 
     var opponentsList = [...players];
 
-    final nextTourPairings = <List<PlayerModel>>[];
+    final nextTourPairings = <PairingModel>[];
     for (var i = 0; opponentsList.length > 1; i++) {
       final player1 = players[i];
       if (opponentsList.contains(player1)) {
         final pairing = [player1];
         if (opponentsList.length > 2) {
           final player2 = opponentsList.firstWhere(
-              (opponent) => !_alreadyPlayed(event, tour, player1, opponent));
+              (opponent) => !_alreadyPlayed(eventPairings, player1, opponent));
           pairing.add(player2);
           opponentsList
             ..remove(player1)
             ..remove(player2);
         } else {
-          if (!_alreadyPlayed(event, tour, player1, opponentsList.last)) {
+          if (!_alreadyPlayed(eventPairings, player1, opponentsList.last)) {
             pairing.add(opponentsList.last);
             opponentsList.clear();
           } else {
@@ -353,11 +271,20 @@ class EditEventBlock extends Bloc<EditEventEvent, EditEventState> {
           }
         }
         if (pairing.isNotEmpty) {
-          nextTourPairings.add(pairing);
+          nextTourPairings.add(PairingModel(
+              player1: pairing.first,
+              player2: pairing.last,
+              player1PRIM: 0,
+              player2PRIM: 0,
+              player1TO: 0,
+              player1VP: 0,
+              player2TO: 0,
+              player2VP: 0,
+              table: nextTourPairings.length + 1,
+              round: tour + 1));
         }
       }
     }
-
     return nextTourPairings;
   }
 }

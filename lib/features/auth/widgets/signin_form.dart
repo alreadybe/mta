@@ -54,6 +54,7 @@ class _SignInFormState extends State<SignInForm> {
       TextFormField(
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
+          cursorColor: Colors.white,
           autofillHints: const [
             AutofillHints.email,
             AutofillHints.username,

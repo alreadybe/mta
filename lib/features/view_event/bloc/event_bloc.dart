@@ -30,9 +30,10 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     final eventQuery =
         await eventCollection.where('id', isEqualTo: event.id).get();
 
-    if (event.appliedPlayers
-            ?.firstWhere((element) => element.userId == user.id) !=
-        null) {
+    if (event.appliedPlayers != null &&
+        event.appliedPlayers!
+            .where((element) => element.userId == user.id)
+            .isNotEmpty) {
       emit(EventState.error('You already applied'));
       emit(EventState.loaded(event: event));
       return;
